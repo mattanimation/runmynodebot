@@ -1,3 +1,13 @@
+/*
+	Author:
+	Project:
+	Description: pass move commands to hardware
+*/
+
+/*
+@param {Object} motor
+@param {Int} delay
+*/
 function stop(motor, delay=500){
 	setTimeout(()=>{
 		motor.stop();
@@ -5,6 +15,9 @@ function stop(motor, delay=500){
 	}, delay);
 }
 
+/*
+Move: 
+*/
 class Move {
 
 	constructor(config, getFile, devicemap, robot){

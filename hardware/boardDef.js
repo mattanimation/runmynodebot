@@ -1,4 +1,10 @@
-var boardmap = {
+/*
+	Author:
+	Project:
+	Description:
+*/
+
+let boardmap = {
 		Raspberry_Pi:{
 			defaults:{
 				get io() {
@@ -19,6 +25,10 @@ var boardmap = {
 };
 
 const { softAssign } = require('../util');
+
+/*
+@param {Object} conf
+*/
 function buildBoardDef(conf){
 	let opts = {id: conf.id || conf.type};
 	if (conf.type in boardmap){

@@ -4,7 +4,7 @@
 
 # Define boards pluged into the pi.
 boards: 
-  - type: Raspberry_Pi # Raspberry pi with default settings.
+  - type: None # Raspberry_Pi # Raspberry pi with default settings.
   
 #Defining usable parts
 parts: 

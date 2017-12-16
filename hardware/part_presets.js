@@ -1,3 +1,8 @@
+/*
+	Author:
+	Project:
+	Description:
+*/
 const five = require('johnny-five');
 
 const { dive } = require('../util');
@@ -6,6 +11,9 @@ const presets = {
 		Motor: five.Motor.SHIELD_CONFIGS
 };
 
+/*
+@param {Object} partConf
+*/
 function getPreset(partConf){
 	try {
 		let path = partConf.type + '.' + partConf.preset;

@@ -1,3 +1,8 @@
+/*
+	Author:
+	Project:
+	Description:
+*/
 const { format } = require('util');
 const { exec } = require('child_process');
 
@@ -19,6 +24,10 @@ const filters = {
 		}, flip: ()=>'transpose=2,transpose=2'
 }
 
+/*
+@param {Object} config
+@param {} getFile
+*/
 function buildFilterCli(config, getFile){
 	let build = '';
 	if (config.filters && config.filters.length){
@@ -34,12 +43,16 @@ function buildFilterCli(config, getFile){
 }
 
 const cmd = '/usr/local/bin/ffmpeg';
-const server = "runmyrobot.com";
+const server = "letsrobot.tv";//"runmyrobot.com";
 const streamkey = 'hello';
 
+/*
+FFMPEG: 
+*/
 class FFMPEG {
 
 	constructor(robot, config, getFile, opts={}){
+		this.os = 'osx'; //this needs to go somwhere else
 		this.robot = robot;
 		this.config = { //These are just defaults.
 				videoDeviceNumber: 0,
@@ -54,7 +67,7 @@ class FFMPEG {
 	start(){
 		setInterval(() => {
 			if (!this.audio){
-				this.startAudio();
+				//this.startAudio();
 			}
 			if (!this.video){
 				this.startVideo();
@@ -76,8 +89,13 @@ class FFMPEG {
 		}
 		this.robot.getAudioPort()
 		.then(({ audio_stream_port }) => {
-			this.audio = exec(format('%s -f alsa -ar 44100 -ac %d -i hw:%d -f mpegts -codec:a mp2 -b:a 32k -muxdelay 0.001 http://%s:%s/%s/640/480/',
-					cmd, this.config.micChannels, this.config.audioDeviceNumber, server, audio_stream_port, streamkey), {shell: '/bin/bash'},
+			let cmdString = ``;
+			if(this.os == 'osx')
+				cmdString = `?`;
+			else
+				cmdString = `${cmd} -f alsa -ar 44100 -ac ${this.config.micChannels} -i hw:${this.config.audioDeviceNumber} -f mpegts -codec:a mp2 -b:a 32k -muxdelay 0.001 http://${server}:${audio_stream_port}/${streamkey}/640/480/`;
+			this.audio = exec(cmdString,
+					{shell: '/bin/bash'},
 					(err, stdout, stderr) => {
 						if (err){
 							console.log(err);
@@ -93,10 +111,15 @@ class FFMPEG {
 		}
 		this.robot.getVideoPort()
 		.then(({ mpeg_stream_port }) => {
-			this.video = exec(format('%s ' + //CMD
-					'-f v4l2 -video_size 640x480 -i /dev/video%d '+ //Input
-					'-f mpegts -r 30 -codec:v mpeg1video -s 640x480 -b:v %dk -bf 0 -muxdelay 0.001 %s http://%s:%s/%s/640/480/', //Output 
-					cmd, this.config.videoDeviceNumber, this.config.kbps, buildFilterCli(this.config, this.getFile), server, mpeg_stream_port, streamkey), {shell: '/bin/bash'},
+			console.log("GOT SREAM PORT: ", mpeg_stream_port)
+			let cmdString = ``;
+			if(this.os == 'osx')
+				cmdString = `${cmd} -f avfoundation -video_size 640x480 -framerate 30.0 -i "0:0" -f mpegts -vcodec mpeg1video -s 640x480 http://${server}:${mpeg_stream_port}/${streamkey}/640/480/`;
+			else if(this.os == 'linux')
+				cmdString = `${cmd} -f v4l2 -video_size 640x480 -i /dev/video${this.config.videoDeviceNumber} -f mpegts -r 30 -codec:v mpeg1video -s 640x480 -b:v ${this.config.kbps}k -bf 0 -muxdelay 0.001 ${buildFilterCli(this.config, this.getFile)} http://${server}:${mpeg_stream_port}/${streamkey}/640/480/`;
+			console.log("video cmd string: " + cmdString);
+			this.video = exec(cmdString, 
+					{shell: '/bin/bash'},
 					(err, stdout, stderr) => {
 						if (err){
 							console.log(err);

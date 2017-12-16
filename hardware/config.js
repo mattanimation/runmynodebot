@@ -1,12 +1,29 @@
+/*
+	Author:
+	Project:
+	Description:
+*/
 const five = require('johnny-five');
 
+/*
+@param {Object} conf
+@param {Boolean} repl
+@return {Promise}
+*/
 function setupHardware(conf, repl=false){
 	let boardsconf = conf.boards;
 	let partsconf = conf.parts;
 	return new Promise((resolve) => {
-		var devicemap = {};
+		let devicemap = {};
 		let board_opts = readBoards(boardsconf, repl);
-		var boards = new five.Boards(board_opts.real);
+		console.log(board_opts)
+		//dont load board if none set
+		if(board_opts.real[0].id == "None") {
+			resolve(null);
+			return;
+		}
+
+		const boards = new five.Boards(board_opts.real);
 		boards.on('ready', ()=>{
 			boards.forEach((board) => {
 				devicemap[board.id] = board;
@@ -29,6 +46,11 @@ function setupHardware(conf, repl=false){
 }
 
 const defineBoard = require('./boardDef');
+/*
+@param {Object} boardsConf
+@param {Boolean} repl
+@return {Object}
+*/
 function readBoards(boardsConf, repl=false){
 	let real = [];
 	let virt = [];
@@ -49,6 +71,11 @@ function readBoards(boardsConf, repl=false){
 
 const findPreset = require('./part_presets');
 const { dive } = require('../util');
+/*
+@param {Object} partconf
+@param {Object} devicemap
+@return null
+*/
 function initPart(partconf, devicemap){
 	let opts = {id: partconf.id || partconf.type};
 	if (partconf.preset){

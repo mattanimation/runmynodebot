@@ -1,9 +1,18 @@
+/*
+	Author:
+	Project:
+	Description:
+*/
+
 //Parse command line.
 const fs = require('fs');
 const yaml = require('js-yaml');
 const path = require('path');
 const colors = require('colors/safe');
 
+/*
+@param {{Object, String}} config, example
+*/
 function buildConfig({config, example}){
 	let fpath;
 	if (config){
@@ -20,9 +29,8 @@ function buildConfig({config, example}){
 	return conf;
 }
 
-var argv = require('yargs')
-// Command to create new config template.
-.command('create', 'Create a new robot configuration file.', yargs => {
+let argv = require('yargs')
+.command('create', 'Create a new robot configuration file.', yargs => { // Command to create new config template.
 	yargs
 	.usage('Usage: $0 create <filename>.yml')
 	.demandCommand(1, 'Please specify a target file.');

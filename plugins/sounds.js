@@ -1,5 +1,13 @@
+/*
+	Author:
+	Project:
+	Description: use alsa to play sounds
+*/
 const { exec } = require('child_process');
 
+/*
+Sounds: 
+*/
 class Sounds {
 
 	constructor(config, getFile, devicemap, robot){

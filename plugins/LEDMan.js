@@ -1,3 +1,9 @@
+/*
+	Author:
+	Project:
+	Description:
+*/
+
 /* eslint-disable */
 class LEDMan {
 	
