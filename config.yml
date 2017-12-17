@@ -1,0 +1,192 @@
+# ref: http://www.yaml.org/refcard.html
+# LetsRobot.tv Config, use this instead of cli args
+letsrobot:
+  host: letsrobot.tv
+  stream_key: hello
+
+robot:
+  owner:          mattanimation # This is your username on the letsrobot site. This is the user that is allowed to issue commands via chat 
+  robot_id:       32606353 # Your robots id. The site will provide you with this and the camera id when you create a new robot.
+  camera_id:      44176536 # Your robots camera id
+  board_type:     custom # Motor controller type for your robot. Current valid types are serial_board, motor_hat, gopigo2, gopigo3, l298n, motozero, pololu, adafruit_pwm, owi_arm or none.
+  turn_delay:     0.4 # Only used for motor_hat, mdd10 and telly
+  straight_delay: 0.5 
+
+videoDeviceNumber: 0
+micChannels: 1
+audioDeviceNumber: 0
+kbps: 350
+
+tts:
+  type:           flite # Specify the TTS engine you are using here. Current valid types are espeak, festival, flite and none
+  tts_volume:     80 # TTS volume
+  anon_tts:       true # Allow anonymous users chat messages to be broadcast over TTS. Set to false to block them.
+  filter_url_tts: false # Block URLS from being broadcast over TTS. Set to true to block them.
+  ext_chat:       true # Enable extended chat commands
+  hw_num:         1 # ALSA HW number for your playback device
+  update_interval: 500
+
+# espeak specific TTS settings go here
+espeak:
+  male:         true # voice gender, male or female
+  voice_number: 1 # voice number
+
+# Festival specific TTS settings go here
+festival:
+  male:         false
+  voice_number: 1
+
+# CMU flite specific TTS settings
+flite:
+  male:         false # voice gender, male or female
+  voice_number: 3 #voice to use
+
+# Amazon polly TTS specific settings here
+# polly requires you to have an amazon aws account and have setup a IAM user will access to polly
+polly:
+  robot_voice: Matthew
+  owner_voice: Russell
+  random_voices: true
+  access_key:
+  secrets_key:
+  region_name: us-east-1
+
+# ffmpeg path
+ffmpeg:
+  path: /usr/local/bin/ffmpeg
+
+# adfafurit hat settings
+adafruit_pwm:
+  address: 0x40
+  pwm_freq: 60
+  more_debug: False
+
+# owi arm settings
+owi_arm:
+  something: blah
+# specify serial posty
+serial:
+  serial_device: /dev/ttyACM0
+
+# mote hat settings
+motor_hat:
+  day_speed: 255
+  night_speed: 255
+  turning_speed: 250
+  forward: [-1,1,-1,1]
+  left: [1,1,1,1]
+
+# Enable charging behaviours 
+slow_for_low_battery: false
+
+# Charging stuff
+charge_hours: 3.0
+discharge_hours: 8.0
+chargeCheckInterval: 5
+chargeIONumber: 17
+
+# raspi gpio settings
+# pin 2
+gopigo2:
+  drive_time: 0.35
+  turn_time: 0.15
+
+# pin 3
+gopigo3:
+  drive_time: 0.35
+  turn_time: 0.15
+
+# Settings specific to the l298n dual h-bridge motor driver
+l298n:
+  StepPinForward: 12,16
+  StepPinBackward: 11,15
+  StepPinLeft: 15,12
+  StepPinRight: 11,16
+  # IMPORTANT NOTE: How this is handled has changed, your values may no longer be correct
+  sleeptime: 0.2 # Change sleeptime to adjust driving speed
+  rotatetimes: 5 # Change rotatetimes to adjust the turning. Will be multiplicated with sleeptime.
+
+# motozero pin settings
+motozero:
+  MotorDelay: 0.3
+  # Motor1 is back left
+  # Motor1A is reverse
+  # Motor1B is forward
+  Motor1A: 24
+  Motor1B: 27
+  Motor1Enable: 5
+
+  # Motor2 is back right
+  # Motor2A is reverse
+  # Motor2B is forward
+  Motor2A: 6
+  Motor2B: 22
+  Motor2Enable: 17
+
+  # Motor3 is ?
+  # Motor3A is reverse
+  # Motor3B is forward
+  Motor3A: 23
+  Motor3B: 16
+  Motor3Enable: 12
+
+  # Motor4 is ?
+  # Motor4A is reverse
+  # Motor4B is forward
+  Motor4A: 13
+  Motor4B: 18
+  Motor4Enable: 25
+
+# pololu settings
+pololu:
+  drivingSpeed: 90
+
+# mc33926 settings
+mc33926:
+  drivingSpeed: 180
+
+# max7219 settings
+max7219:
+  something: blah
+
+# led settings
+ledrotate: 180
+
+# telly bot specific settings
+telly:
+  led-max-brightness: 255
+
+# DO NOT use these until I am sure its alright. Use the command line instead.
+# right_wheel_forward_speed:
+# right_wheel_backward_speed: 
+# left_wheel_forward_speed:
+# right_wheel_backward_speed: 
+
+# which style of command queue to use one is smoother than other, in drive_modes
+driving:
+  mode: fcfslb_tank  
+
+# This is mostly stuff you probably shouldn't be touching
+misc:
+  custom_hardware: true # Enable the controller to look for custom handler code
+  custom_tts: true # Enable the controller to look for custom TTS handler code
+  custom_chat: true # Enable the controller to look for custom chat handler code
+  watchdog: true # Enable the watchdog timer, if you are not using a raspberry pi, you won't want this.
+  enable_async: false # Enable async handling of commands, you handler with either need to be able to function asyncronously or it will need it's own blocking.
+  no_chat_server: false # disable the chat server connection
+  v4l2-ctl: /usr/bin/v4l2-ctl # Path to v4l2-ctl
+  debug_messages: false # Output debugging information to the console
+  info_server: letsrobot.tv # Server the robot connects to
+  # wifi stuff
+  secret_key: password?
+  auto_wifi: false
+  wpa_template: ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev update_config=1 country=GB network={{ ssid=\"beepx\" psk=\"yellow123\" key_mgmt=WPA-PSK }} network={{ ssid=\"{name}\" psk=\"{password}\" key_mgmt=WPA-PSK }}
+  reverse_ssh: true # Enable reverse ssh functionailty. This only enables the functionality in the controller, you still need a key file for this actually work.
+  reverse-ssh-key-file: /home/pi/reverse_ssh_key1.pem
+  reverse-ssh-host: ubuntu@52.52.204.174
+  check_internet: true # Periodically check internet connection status, and report failure / connect over tts
+  check_freq: 120
+  secure_cert: true # Disable requiring valid ssl certs for those occasions where they fail
+
+# end of config
+areYouCool: true

@@ -11,12 +11,12 @@ const five = require('johnny-five');
 @return {Promise}
 */
 function setupHardware(conf, repl=false){
+	console.log("WTF")
 	let boardsconf = conf.boards;
 	let partsconf = conf.parts;
 	return new Promise((resolve) => {
 		let devicemap = {};
 		let board_opts = readBoards(boardsconf, repl);
-		console.log(board_opts)
 		//dont load board if none set
 		if(board_opts.real[0].id == "None") {
 			resolve(null);

@@ -8,6 +8,7 @@ const io = require('socket.io-client');
 const EventEmitter = require('events');
 const { format } = require('util');
 const { jsonGrab } = require('./util');
+const ip = require("ip"); //https://github.com/indutny/node-ip
 
 const server = 'letsrobot.tv';
 const port = {
@@ -22,24 +23,28 @@ class RobotIO extends EventEmitter {
 
 	constructor(opts={}){
 		super();
-		this.robotID = opts.robotID;
-		this.cameraID = opts.cameraID;
-		this.env = opts.env;
+		this.robotID = opts.robot_id;
+		this.cameraID = opts.camera_id;
+		this.owner = opts.owner;
 
+		this.appSocket = null;
 		this.controlSocket = null;
 		this.chatSocket = null;
 		
-		//get chat and control ports first
-		/*
+		//setup app socket first
+		this.setupAppServerSocket();
+		
+		//setup control host
 		this.getControlHostPort()
 		.then((controlHostPort) => {this.setupControlSocket(controlHostPort, this);})
 		.catch((e)=>{console.log(e)});
-		*/
 		
-		//get chat socket connection
+
+		//setup chat 
 		this.getChatHostPort()
 		.then((chatHostPort) => {this.setupChatSocket(chatHostPort, this);})
 		.catch((e)=>{console.log(e)});
+
 
 		/*
 		this.socket = io.connect(`http://${server}:${port[this.env]}`, {reconnect: true});
@@ -73,8 +78,62 @@ class RobotIO extends EventEmitter {
 	}
 
 	identifyRobotID(_sock){
-		console.log("identifying robot id");
+		console.log(`identifying robot id: ${this.robotID}`);
+		const _this = this;
 		_sock.emit('identify_robot_id', this.robotID);
+
+		_this.delayedExec(()=>{
+			_sock.emit('ip_information', {'ip': ip.address(), 'robot_id': _this.robotID})
+		});
+	}
+
+	setupAppServerSocket(){
+		const _this = this;
+		console.log("connecting to app server");
+		let _wsUrl = `http://${server}:${port.prod}`;
+		console.log(_wsUrl);
+		this.appServerSocket = io.connect(_wsUrl, {reconnect: true});
+
+		//add connection events
+		this.appServerSocket.on('connect', ()=>{
+			console.log("app server did connect! ");
+			_this.identifyRobotID(_this.appServerSocket);
+			
+			console.log("you should be up and running at: ");
+			console.log(`https://letsrobot.tv/robocaster/${_this.owner}/robot/${_this.robotID}`);
+		});
+
+		this.appServerSocket.on('reconnect', ()=>{
+			console.log("app server did reconnect! ");
+			//so whatever here
+			_this.identifyRobotID(_this.appServerSocket);
+		});
+
+		this.appServerSocket.on('disconnect', ()=>{
+			console.log("app server did disconnect! ");
+			//so whatever here
+		});
+
+		_this.appServerSocket.on('chat_message_with_name', data => {
+			if (data.robot_id===_this.robotID || !_this.robotID){
+				_this.emit('chat_message_with_name', data); //this sends up to tts in runmyrobot.js
+			}
+		});
+
+		_this.appServerSocket.on('command_to_robot', data => {
+			console.log(`COMMMAND TO ROBOT!!! ${data}`);
+			if (data.robot_id===_this.robotID || !_this.robotID){
+				_this.emit('command_to_robot', data);
+			}
+		});
+
+		this.appServerSocket.on('exclusive_control', data => {
+			if (data.robot_id===_this.robotID || !_this.robotID){
+				_this.emit('exclusive_control', data); //this sends to control in ?
+			}
+		});
+
+		this.sendAppServer = this.emit.bind(this.appServerSocket);
 	}
 
 	setupControlSocket(controlHostPort, _this){
@@ -89,6 +148,7 @@ class RobotIO extends EventEmitter {
 			_this.controlSocket.on('connect', ()=>{
 				console.log("control did connect! ");
 				_this.identifyRobotID(_this.controlSocket);
+				
 			});
 
 			_this.controlSocket.on('reconnect', ()=>{
@@ -103,18 +163,13 @@ class RobotIO extends EventEmitter {
 			});
 
 			_this.controlSocket.on('command_to_robot', data => {
+				console.log(`COMMMAND TO ROBOT!!! ${data}`);
 				if (data.robot_id===_this.robotID || !_this.robotID){
 					_this.emit('command_to_robot', data);
 				}
 			});
-
-			_this.controlSocket.on('exclusive_control', data => {
-				if (data.robot_id===_this.robotID || !_this.robotID){
-					_this.emit('exclusive_control', data);
-				}
-			});
 			
-			_this.sendControl = _this.controlSocket.emit.bind(_this.controlSocket);
+			_this.sendControl = _this.emit.bind(_this.controlSocket);
 
 		}
 		else
@@ -146,29 +201,41 @@ class RobotIO extends EventEmitter {
 
 			_this.chatSocket.on('chat_message_with_name', data => {
 				if (data.robot_id===_this.robotID || !_this.robotID){
-					_this.emit('chat_message_with_name', data);
+					_this.emit('chat_message_with_name', data); //this sends up to tts in runmyrobot.js
 				}
 			});
 
-			_this.sendChat = _this.chatSocket.emit.bind(_this.chatSocket);
+			_this.sendChat = _this.emit.bind(_this.chatSocket);
 		}
 		else
 			console.log("no robot id...");
 	}
 
-	getOwnerDetails(username){
-		return jsonGrab(`https://api.letsrobot.tv/api/v1/accounts/${username}`);
+	delayedExec(func){
+		setTimeout(()=>{
+			func();
+		}, 150);
+	}
+
+	sendChargeState(charging){
+		let chargeState = {robot_id: this.robotID, charging: charging}
+    	this.appServerSocket.emit('charge_state', chargeState);
+    	console.log(`charge state: ${chargeState}`);
+	}
+
+	getOwnerDetails(){
+		return jsonGrab(`https://api.letsrobot.tv/api/v1/accounts/${this.owner}`);
 	}
 
 	getControlHostPort(){
 		let _url = `https://${server}/get_control_host_port/${this.robotID}`;
-		console.log(`control host url: ${_url}`)
+		console.log(`getting control host port from: ${_url}`);
 		return jsonGrab(_url);
 	}
 
 	getChatHostPort(){
 		let _url = `https://${server}/get_chat_host_port/${this.robotID}`;
-		console.log(`chat host url: ${_url}`)
+		console.log(`getting chat host port from: ${_url}`);
 		return jsonGrab(_url)
 	}
 
