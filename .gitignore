@@ -3,6 +3,7 @@
 .settings
 .tern-project
 .jshintrc
+<<<<<<< HEAD
 
 # Logs
 logs
@@ -63,3 +64,7 @@ typings/
 # dotenv environment variables file
 .env
 
+=======
+node_modules
+package-lock.json
+>>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47

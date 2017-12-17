@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "runmynodebot",
   "version": "1.2.2",
   "description": "Runs your nodebot",
@@ -31,4 +32,36 @@
   "bin": {
     "runmynodebot": "./runmynodebot.js"
   }
+=======
+	"name": "runmynodebot",
+	"version": "1.2.2",
+	"description": "Runs your nodebot",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Mike111177/runmynodebot.git"
+	},
+	"keywords": [
+		"nodebot",
+		"letsrobot.tv",
+		"runmyrobot"
+	],
+	"author": "Mike111177",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/Mike111177/runmynodebot/issues"
+	},
+	"homepage": "https://github.com/Mike111177/runmynodebot#readme",
+	"dependencies": {
+		"colors": "^1.1.2",
+		"johnny-five": "^0.11.3",
+		"js-yaml": "^3.9.1",
+		"request": "^2.81.0",
+		"request-promise-native": "^1.0.4",
+		"socket.io-client": "^2.0.3",
+		"yargs": "^8.0.2"
+	},
+	"bin": {
+		"runmynodebot": "./runmynodebot.js"
+	}
+>>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47
 }
