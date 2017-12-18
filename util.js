@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
 	Author:
 	Project:
@@ -6,8 +5,6 @@
 */
 const { URL } = require('url');
 const { get } = require('https');
-=======
->>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47
 const fs = require('fs');
 
 /*
@@ -24,7 +21,6 @@ function dive(obj, path){
 @return None
 */
 function softAssign(...objs){
-<<<<<<< HEAD
 	const target = objs[0];
 	const sources = objs.slice(1);
 	sources.forEach( source => Object.keys(source).forEach( key => {
@@ -49,7 +45,7 @@ function jsonGrab(link) {
 			});
 		}).on('err', reject);
 	});
-=======
+
   const target = objs[0];
   const sources = objs.slice(1);
   sources.forEach(source => Object.keys(source).forEach(key => {
@@ -57,7 +53,6 @@ function jsonGrab(link) {
       target[key] = source[key];
     }
   }));
->>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47
 }
 
 /*
@@ -87,5 +82,6 @@ function copy(source, target) {
 module.exports = {
   dive: dive,
   softAssign: softAssign,
-  copy: copy
+  copy: copy,
+  jsonGrab: jsonGrab
 };

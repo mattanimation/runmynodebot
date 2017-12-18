@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
 	Author:
 	Project:
@@ -23,26 +22,6 @@ let boardmap = {
 				}
 			}
 		}
-=======
-var boardmap = {
-  Raspberry_Pi:{
-    defaults:{
-      get io() {
-        const Raspi = require('raspi-io');
-        return new Raspi();
-      }
-    }
-  },
-  Arduino: {},
-  PCA9865: {
-    defaults: {
-      controller: "PCA9865",
-      custom: {
-        virtual: true
-      }
-    }
-  }
->>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47
 };
 
 const { softAssign } = require('../util');

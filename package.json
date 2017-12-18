@@ -1,5 +1,5 @@
 {
-<<<<<<< HEAD
+
   "name": "runmynodebot",
   "version": "1.2.2",
   "description": "Runs your nodebot",
@@ -31,8 +31,7 @@
   },
   "bin": {
     "runmynodebot": "./runmynodebot.js"
-  }
-=======
+  },
 	"name": "runmynodebot",
 	"version": "1.2.2",
 	"description": "Runs your nodebot",
@@ -63,5 +62,5 @@
 	"bin": {
 		"runmynodebot": "./runmynodebot.js"
 	}
->>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47
+
 }

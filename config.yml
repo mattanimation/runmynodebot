@@ -12,10 +12,16 @@ robot:
   turn_delay:     0.4 # Only used for motor_hat, mdd10 and telly
   straight_delay: 0.5 
 
-videoDeviceNumber: 0
-micChannels: 1
-audioDeviceNumber: 0
-kbps: 350
+video:
+  deviceNumber: 0
+  kbps: 350
+  size_x: 640
+  size_y: 480
+
+audio:
+  micChannels: 1
+  deviceNumber: 0
+  kbps: 32
 
 tts:
   type:           flite # Specify the TTS engine you are using here. Current valid types are espeak, festival, flite and none
@@ -164,7 +170,7 @@ telly:
 
 # which style of command queue to use one is smoother than other, in drive_modes
 driving:
-  mode: fcfslb_tank  
+  mode: polling_tank  
 
 # This is mostly stuff you probably shouldn't be touching
 misc:

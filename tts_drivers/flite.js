@@ -165,9 +165,8 @@ function init(config){
 	}).catch((err)=>{console.log(err);});
 }
 
-
-
 module.exports = {
 	init: init,
-	say: (str) => {queue.push(str);}
+	say: (str)=>{ queue.push(str); }
 }
+

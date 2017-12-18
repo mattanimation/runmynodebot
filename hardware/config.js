@@ -5,7 +5,6 @@
 */
 const five = require('johnny-five');
 
-<<<<<<< HEAD
 /*
 @param {Object} conf
 @param {Boolean} repl
@@ -68,54 +67,8 @@ function readBoards(boardsConf, repl=false){
 		real: real,
 		virtual: virt
 	};
-=======
-function setupHardware(conf, repl = false){
-  let boardsconf = conf.boards;
-  let partsconf = conf.parts;
-  return new Promise((resolve) => {
-    var devicemap = {};
-    let board_opts = readBoards(boardsconf, repl);
-    var boards = new five.Boards(board_opts.real);
-    boards.on('ready', ()=>{
-      boards.forEach((board) => {
-        devicemap[board.id] = board;
-      });
-      board_opts.virtual.forEach((vboard)=>{
-        devicemap[vboard.id] = new five.Board.Virtual(new five.Expander(vboard));
-      });
-      partsconf.forEach((partcfg)=>{
-        initPart(partcfg, devicemap);
-      });
-      if (repl){
-        boards.repl.inject({
-          devices: devicemap
-        });
-        devicemap.repl = boards.repl;
-      }
-      resolve(devicemap);
-    });
-  });
 }
 
-const defineBoard = require('./boardDef');
-function readBoards(boardsConf, repl = false){
-  let real = [];
-  let virt = [];
-  boardsConf.forEach((boardcfg)=>{
-    let opts = defineBoard(boardcfg);
-    opts.repl = repl;
-    if (opts.custom && opts.custom.virtual){
-      virt.push(opts);
-    } else {
-      real.push(opts);
-    }
-  });
-  return {
-    real: real,
-    virtual: virt
-  };
->>>>>>> b7a502ca8e3cdf4f4a652962386c85f67d8faa47
-}
 
 const findPreset = require('./part_presets');
 const { dive } = require('../util');
