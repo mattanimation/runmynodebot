@@ -30,6 +30,10 @@ function softAssign(...objs){
 	}));
 }
 
+function removeUsername(_str){
+  return _str.split('] ')[1];
+}
+
 /*
 grab json data from a given url string
 @param {String} link 
@@ -83,5 +87,6 @@ module.exports = {
   dive: dive,
   softAssign: softAssign,
   copy: copy,
-  jsonGrab: jsonGrab
+  jsonGrab: jsonGrab,
+  removeUsername: removeUsername
 };

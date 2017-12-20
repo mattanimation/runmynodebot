@@ -44,36 +44,6 @@ class RobotIO extends EventEmitter {
 		.then((chatHostPort) => {this.setupChatSocket(chatHostPort, this);})
 		.catch((e)=>{console.log(e)});
 
-
-		/*
-		this.socket = io.connect(`http://${server}:${port[this.env]}`, {reconnect: true});
-
-		if (this.robotID) {
-			this.socket.on('connect', ()=>{
-				this.socket.emit('identify_robot_id', this.robotID);
-			});
-		}
-
-		this.socket.on('command_to_robot', data => {
-			if (data.robot_id===this.robotID || !this.robotID){
-				this.emit('command_to_robot', data);
-			}
-		});
-		this.socket.on('exclusive_control', data => {
-			if (data.robot_id===this.robotID || !this.robotID){
-				this.emit('exclusive_control', data);
-			}
-		});
-		this.socket.on('chat_message_with_name', data => {
-			if (data.robot_id===this.robotID || !this.robotID){
-				this.emit('chat_message_with_name', data);
-			}
-		});
-		
-		this.send = this.socket.emit.bind(this.socket);
-		*/
-
-
 	}
 
 	identifyRobotID(_sock){
@@ -119,38 +89,21 @@ class RobotIO extends EventEmitter {
 			}
 		});
 
-		this.sendAppServer = this.emit.bind(this.appServerSocket);
+		this.sendApp = this.emit.bind(this.appServerSocket);
 	}
 
 	setupControlSocket(controlHostPort, _this){
 		console.log("got control host port");
 		if(_this.robotID){
 			console.log("i have a robot id: "+this.robotID);
-			let _wsUrl = `http://${controlHostPort.host}:${controlHostPort.port}/${_this.robotID}`;
-			console.log(_wsUrl);
+			let _wsUrl = `http://${controlHostPort.host}:${controlHostPort.port}`; //${_this.robotID}`;
+			console.log("control host: " + _wsUrl);
 			_this.controlSocket = io.connect(_wsUrl, {reconnect: true});
 
-			//add connection events
-			_this.controlSocket.on('connect', ()=>{
-				console.log("control did connect! ");
-				_this.identifyRobotID(_this.controlSocket);
-				
-			});
-
-			_this.controlSocket.on('reconnect', ()=>{
-				console.log("control did reconnect! ");
-				//so whatever here
-				_this.identifyRobotID(_this.controlSocket);
-			});
-
-			_this.controlSocket.on('disconnect', ()=>{
-				console.log("control did disconnect! ");
-				//so whatever here
-			});
-
 			_this.controlSocket.on('command_to_robot', data => {
-				console.log(`COMMMAND TO ROBOT!!! ${data}`);
-				if (data.robot_id===_this.robotID || !_this.robotID){
+				//console.log(`COMMMAND TO ROBOT!!! ${data}`);
+				//console.log(data)
+				if (data.robot_id ===_this.robotID || !_this.robotID){
 					_this.emit('command_to_robot', data);
 				}
 			});
@@ -232,6 +185,17 @@ class RobotIO extends EventEmitter {
 
 	getVideoPort(){
 		return jsonGrab(`https://${server}/get_video_port/${this.cameraID}`);
+	}
+
+	//call this periodically to let server know the stream is active
+	setOnlineStatus(_onOff){
+		console.log("sending online status");
+		//Tell the server we are online
+		this.appServerSocket.emit('send_video_status', {
+			"send_video_process_exists": _onOff,
+			ffmpeg_process_exists: _onOff,
+			camera_id: this.cameraID
+		});
 	}
 
 }

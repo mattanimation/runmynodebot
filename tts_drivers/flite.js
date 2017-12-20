@@ -36,6 +36,8 @@ class FliteSpeech {
 
 		this.config = config || {};
 		this.voices = [];
+
+		this.speech = undefined;
 	}
 
 	init(){
@@ -46,6 +48,10 @@ class FliteSpeech {
 			});
 		});
 		return p;
+	}
+
+	kill_processes(){
+		this.speech.kill();
 	}
 
 	detectFeatures(cb) {
@@ -96,7 +102,7 @@ class FliteSpeech {
 
 	play(file, cb){
 		var cmd = 'afplay';// || "sox"; //dep.aplay ? 'aplay' :
-		child.exec(cmd + ' ' + file, (err) => {
+		this.speech = child.exec(cmd + ' ' + file, (err) => {
 			if (err) return cb(err);
 			cb();
 		});
@@ -127,7 +133,7 @@ class FliteSpeech {
 
 	save(text, path, cb){
 		//if (!dep.flite) return cb(new Error('required binary flite not available'));
-			child.exec(this.cmd.call(this, '-t "' + text + '" -o ' + path), cb);
+			this.speech = child.exec(this.cmd.call(this, '-t "' + text + '" -o ' + path), cb);
 	}
 
 	escapeshell(cmd) {

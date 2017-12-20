@@ -56,11 +56,17 @@ class FFMPEG {
 		this.config = config || {};
 		this.robot = robot;
 		this.getFile = getFile;
+		this.audio = null;
+		this.video = null;
+
+		this.onlineStatusInt = null;
+		this.checkAVInt = null;
 	}
 
 	start(){
 		const _this =this;
-		setInterval(() => {
+
+		this.checkAVInt = setInterval(() => {
 			if (!_this.audio){
 				this.startAudio();
 			}
@@ -69,13 +75,22 @@ class FFMPEG {
 			}
 		}, 5000); // Check every 5 seconds.
 
-		setInterval(() => {
-			_this.robot.send('send_video_status', {
-				send_video_process_exists: true,
-                ffmpeg_process_exists: true,
-                camera_id: _this.robot.cameraID
-			});
+		//check in for server to show online
+		this.onlineStatusInt = setInterval(() => {
+			_this.robot.setOnlineStatus(true);
 		}, 60000); // Send every minute.
+	}
+
+	/*
+	make sure this fails gracefully and the streams don't stay on
+	*/
+	kill_processes(){
+		clearInterval(this.onlineStatusInt);
+		clearInterval(this.checkAVInt);
+		if(this.audio)
+			this.audio.kill();
+		if(this.video)
+			this.video.kill();
 	}
 
 	startAudio(){
